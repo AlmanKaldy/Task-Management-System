@@ -116,12 +116,20 @@ import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
+/**
+ * Digital Identity: ALMANBET
+ */
 @Service
-public class TaskService {
+public class TaskService implements CrudService<Task> {
     private List<Task> tasks = new ArrayList<>();
 
     @PostConstruct
     public void init() throws InterruptedException {
+        System.out.println("  ___   _      ___  ___  ___  _  _  ___  ___  _____ ");
+        System.out.println(" / _ \\ | |    |  \\/  | / _ \\| \\| || _ \\| __||_   _|");
+        System.out.println("/ /_\\ \\| |__  | .  . |/ /_\\ \\ .  || _ <| _|   | |  ");
+        System.out.println("\\_/ \\_/\\____/ \\_|  |_/\\_/ \\_/\\_|\\_||___/|___|  |_|  ");
+        
         System.out.print("System Initializing: [");
         for (int i = 0; i <= 20; i++) {
             String dots = "=".repeat(i) + " ".repeat(20 - i);
@@ -131,13 +139,25 @@ public class TaskService {
         System.out.println("\\nSystem Ready!");
     }
 
-    public void addTask(Task task) {
+    @Override
+    public List<Task> getAll() { return tasks; }
+
+    @Override
+    public Task create(Task task) {
         tasks.add(task);
-        System.out.println("┌──────────────────────────────────────────┐");
-        System.out.println("│ EVENT: TASK_CREATED                      │");
-        System.out.println("│ ID:    " + String.format("%-34s", task.getId()) + " │");
-        System.out.println("└──────────────────────────────────────────┘");
+        return task;
     }
+}`,
+    interface: `package com.example.taskmanager.service;
+import java.util.List;
+
+/**
+ * OOP: Abstraction - Generic Interface
+ */
+public interface CrudService<T> {
+    List<T> getAll();
+    T create(T item);
+    void delete(Long id);
 }`,
     controller: `package com.example.taskmanager.controller;
 
@@ -362,6 +382,7 @@ public class TaskController {
             >
               {[
                 { title: 'pom.xml', code: javaCode.pom, lang: 'xml' },
+                { title: 'CrudService.java (Interface)', code: javaCode.interface, lang: 'java' },
                 { title: 'BaseEntity.java (Inheritance)', code: javaCode.baseEntity, lang: 'java' },
                 { title: 'TaskService.java', code: javaCode.service, lang: 'java' },
                 { title: 'TaskController.java', code: javaCode.controller, lang: 'java' },
