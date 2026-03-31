@@ -1,0 +1,5 @@
+{
+  "name": "Task Management System - OOP in Practice ",
+  "description": "A Spring Boot-style Task Management System demonstrating Layered Architecture, Encapsulation, and RESTful APIs.",
+  "requestFramePermissions": []
+}
