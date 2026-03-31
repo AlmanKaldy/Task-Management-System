@@ -84,62 +84,60 @@ export default function App() {
   const javaCode = {
     pom: `<?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0">
-    <modelVersion>4.0.0</modelVersion>
-    <parent>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-starter-parent</artifactId>
-        <version>3.2.0</version>
-    </parent>
-    <groupId>com.example</groupId>
-    <artifactId>task-manager</artifactId>
-    <version>0.0.1-SNAPSHOT</version>
-
+    <!-- ... existing config ... -->
     <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-web</artifactId>
         </dependency>
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-actuator</artifactId>
+        </dependency>
     </dependencies>
 </project>`,
-    model: `package com.example.taskmanager.model;
+    baseEntity: `package com.example.taskmanager.model;
+import java.time.LocalDateTime;
 
 /**
- * Encapsulation: Private fields with public getters/setters.
+ * OOP: Inheritance - Abstract Base Class
  */
-public class Task {
-    private Long id;
-    private String title;
-    private String description;
-    private boolean completed;
-    private Category category;
+public abstract class BaseEntity {
+    protected Long id;
+    protected LocalDateTime createdAt = LocalDateTime.now();
 
-    public Task(Long id, String title, String description, Category category) {
-        this.id = id;
-        this.title = title;
-        this.description = description;
-        this.category = category;
-    }
-
-    // Getters and Setters...
+    public Long getId() { return id; }
+    public void setId(Long id) { this.id = id; }
+    public LocalDateTime getCreatedAt() { return createdAt; }
 }`,
     service: `package com.example.taskmanager.service;
 
+import jakarta.annotation.PostConstruct;
 import org.springframework.stereotype.Service;
 import java.util.*;
 
 @Service
 public class TaskService {
     private List<Task> tasks = new ArrayList<>();
-    private Long nextId = 1L;
 
-    public List<Task> getAllTasks() { return tasks; }
-    
-    public Task addTask(Task task) {
-        task.setId(nextId++);
-        tasks.add(task);
-        return task;
+    @PostConstruct
+    public void init() throws InterruptedException {
+        System.out.print("System Initializing: [");
+        for (int i = 0; i <= 20; i++) {
+            String dots = "=".repeat(i) + " ".repeat(20 - i);
+            System.out.print("\\rSystem Initializing: [" + dots + "] " + (i * 5) + "%");
+            Thread.sleep(100);
+        }
+        System.out.println("\\nSystem Ready!");
     }
-    // CRUD logic...
+
+    public void addTask(Task task) {
+        tasks.add(task);
+        System.out.println("┌──────────────────────────────────────────┐");
+        System.out.println("│ EVENT: TASK_CREATED                      │");
+        System.out.println("│ ID:    " + String.format("%-34s", task.getId()) + " │");
+        System.out.println("└──────────────────────────────────────────┘");
+    }
 }`,
     controller: `package com.example.taskmanager.controller;
 
@@ -182,6 +180,17 @@ public class TaskController {
             </div>
           </div>
           <nav className="flex gap-1 bg-gray-100 p-1 rounded-xl">
+            <button 
+              onClick={async () => {
+                const res = await fetch('/actuator/health');
+                const data = await res.json();
+                alert(`Health Status: ${data.status}\nComponents: ${JSON.stringify(data.components)}`);
+              }}
+              className="flex items-center gap-2 px-4 py-2 rounded-lg text-sm font-medium text-gray-500 hover:text-[#6DB33F] transition-all"
+            >
+              <CheckCircle2 className="w-4 h-4" />
+              Health Check
+            </button>
             {[
               { id: 'demo', label: 'Live Demo', icon: Terminal },
               { id: 'structure', label: 'Project Structure', icon: FolderTree },
@@ -353,7 +362,7 @@ public class TaskController {
             >
               {[
                 { title: 'pom.xml', code: javaCode.pom, lang: 'xml' },
-                { title: 'Task.java (Model)', code: javaCode.model, lang: 'java' },
+                { title: 'BaseEntity.java (Inheritance)', code: javaCode.baseEntity, lang: 'java' },
                 { title: 'TaskService.java', code: javaCode.service, lang: 'java' },
                 { title: 'TaskController.java', code: javaCode.controller, lang: 'java' },
               ].map((item, idx) => (

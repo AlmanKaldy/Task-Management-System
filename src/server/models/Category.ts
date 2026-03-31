@@ -1,19 +1,15 @@
+import { BaseEntity } from "./BaseEntity";
+
 /**
  * Model Layer: Category Entity
- * Demonstrates Encapsulation with private fields and accessors.
+ * Inherits from BaseEntity.
  */
-export class Category {
-  private id: number;
+export class Category extends BaseEntity {
   private name: string;
 
   constructor(id: number, name: string) {
-    this.id = id;
+    super(id);
     this.name = name;
-  }
-
-  // Getters and Setters (Encapsulation)
-  public getId(): number {
-    return this.id;
   }
 
   public getName(): string {

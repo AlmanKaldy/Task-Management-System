@@ -12,6 +12,11 @@ async function startServer() {
   // API Routes (Controller Layer)
   app.use("/api/tasks", taskController);
 
+  // Health Check (Actuator Simulation)
+  app.get("/actuator/health", (req, res) => {
+    res.json({ status: "UP", components: { db: "UP", disk: "UP" } });
+  });
+
   // Vite middleware for development
   if (process.env.NODE_ENV !== "production") {
     const vite = await createViteServer({
